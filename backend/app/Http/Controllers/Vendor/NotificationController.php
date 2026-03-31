@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Customer;
+namespace App\Http\Controllers\Vendor;
 
 use Exception;
 use Illuminate\Http\Request;
