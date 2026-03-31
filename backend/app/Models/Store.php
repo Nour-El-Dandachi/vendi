@@ -12,6 +12,7 @@ class Store extends Model
         'description',
         'logo',
         'phone',
+        'rating',
         'status',
     ];
 

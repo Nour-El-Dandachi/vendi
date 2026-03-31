@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Vendor\StoreController;
+use App\Http\Controllers\Customer\OrderItemController;
 
 Route::group(["prefix" => "v0.1"], function () {
 
@@ -27,16 +28,28 @@ Route::group(["prefix" => "v0.1"], function () {
             Route::get('/addresses/{id?}', [AddressController::class, "getAllAddresses"]);
             Route::post('/add_update_address/{id?}', [AddressController::class, "addOrUpdateAddress"]);
             Route::get('/notifications/{id?}', [NotificationController::class, "getAllNotifications"]);
+            Route::delete('/delete_address/{id}', [AddressController::class, "deleteAddress"]);
+            Route::post('/add_update_order/{id?}', [OrderController::class, "addOrUpdateOrder"]);
+            Route::delete('/delete_order/{id}', [OrderController::class, "deleteOrder"]);
+            Route::get('/order_items/{id?}', [OrderItemController::class, "getAllOrderItems"]);
+            Route::post('/add_update_order_item/{id?}', [OrderItemController::class, "addOrUpdateOrderItem"]);
+            Route::delete('/delete_order_item/{id}', [OrderItemController::class, "deleteOrderItem"]);
+            Route::delete('/delete_cart_item/{id}', [CartController::class, "deleteCartItem"]);
+            Route::delete('/clear_cart', [CartController::class, "clearCart"]);
+            Route::get('/cart_total', [CartController::class, "getCartTotal"]);
         });
 
         Route::group(["prefix" => "vendor"], function () {
             Route::get('/products/{id?}', [VendorProductController::class, "getAllProducts"]);
             Route::post('/add_update_product/{id?}', [VendorProductController::class, "addOrUpdateProduct"]);
+            Route::delete('/delete_product/{id}', [VendorProductController::class, "deleteProduct"]);
+
             Route::get('/orders/{id?}', [VendorOrderController::class, "getAllOrders"]);
+            Route::post('/update_order_status/{id}', [VendorOrderController::class, "updateOrderStatus"]);
+
             Route::get('/stores/{id?}', [StoreController::class, "getAllStores"]);
             Route::post('/add_update_store/{id?}', [StoreController::class, "addOrUpdateStore"]);
             Route::delete('/delete_store/{id}', [StoreController::class, "deleteStore"]);
-            Route::delete('/delete_product/{id}', [VendorProductController::class, "deleteProduct"]);
         });
 
         Route::group(["prefix" => "admin"], function () {
