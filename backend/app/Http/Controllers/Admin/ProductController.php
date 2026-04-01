@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use Exception;
-use App\Services\AdminService;
+use App\Services\ProductService;
 use App\Http\Controllers\Controller;
 
 class ProductController extends Controller
@@ -11,7 +11,7 @@ class ProductController extends Controller
     public function getAllProducts($id = null)
     {
         try {
-            $products = AdminService::getAllProducts($id);
+            $products = ProductService::getAdminProducts($id);
             return $this->responseJSON($products);
         } catch (Exception $e) {
             return $this->responseJSON(null, "Failed to retrieve products.", 500);
@@ -21,13 +21,13 @@ class ProductController extends Controller
     public function deleteProduct($id)
     {
         try {
-            $product = AdminService::getAllProducts($id);
+            $product = ProductService::getAdminProducts($id);
 
             if (!$product) {
                 return $this->responseJSON(null, "Product not found.", 404);
             }
 
-            $deleted = AdminService::deleteProduct($product);
+            $deleted = ProductService::deleteProduct($product);
 
             if ($deleted) {
                 return $this->responseJSON(null);

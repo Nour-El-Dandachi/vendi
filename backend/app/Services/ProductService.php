@@ -3,12 +3,39 @@
 namespace App\Services;
 
 use App\Models\Product;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class ProductService
 {
-    static function getAllProducts($id = null)
+    static function getCustomerProducts($id = null)
+    {
+        if (!$id) {
+            return Product::with(['vendor', 'store'])
+                ->where('moderation_status', 'approved')
+                ->get();
+        }
+
+        return Product::with(['vendor', 'store'])
+            ->where('moderation_status', 'approved')
+            ->find($id);
+    }
+
+    static function getVendorProducts($vendor_id, $id = null)
+    {
+        if (!$id) {
+            return Product::with(['vendor', 'store'])
+                ->where('vendor_id', $vendor_id)
+                ->get();
+        }
+
+        return Product::with(['vendor', 'store'])
+            ->where('vendor_id', $vendor_id)
+            ->find($id);
+    }
+
+    static function getAdminProducts($id = null)
     {
         if (!$id) {
             return Product::with(['vendor', 'store'])->get();
@@ -46,6 +73,23 @@ class ProductService
         $product->price = $data['price'] ?? $product->price;
         $product->stock_quantity = $data['stock_quantity'] ?? $product->stock_quantity;
         $product->status = $data['status'] ?? $product->status;
+
+        $moderationResponse = Http::post('http://127.0.0.1:8001/moderate/product', [
+            'name' => $product->name,
+            'description' => $product->description,
+            'category' => $product->category,
+            'image_path' => $product->image ? storage_path('app/public/' . $product->image) : null,
+        ]);
+
+        if ($moderationResponse->successful()) {
+            $moderationData = $moderationResponse->json();
+
+            $product->moderation_status = $moderationData['moderation_status'] ?? 'pending';
+            $product->moderation_reason = $moderationData['moderation_reason'] ?? null;
+        } else {
+            $product->moderation_status = 'pending';
+            $product->moderation_reason = 'Moderation service unavailable';
+        }
 
         $product->save();
         return $product;

@@ -13,7 +13,7 @@ class ProductController extends Controller
     public function getAllProducts($id = null)
     {
         try {
-            $products = ProductService::getAllProducts($id);
+            $products = ProductService::getVendorProducts(auth()->id(), $id);
             return $this->responseJSON($products);
         } catch (Exception $e) {
             return $this->responseJSON(null, "Failed to retrieve products.", 500);
@@ -26,7 +26,7 @@ class ProductController extends Controller
             $product = new Product;
 
             if ($id) {
-                $product = ProductService::getAllProducts($id);
+                $product = ProductService::getVendorProducts(auth()->id(), $id);
 
                 if (!$product) {
                     return $this->responseJSON(null, "Product not found.", 404);
@@ -34,6 +34,8 @@ class ProductController extends Controller
             }
 
             $data = $request->all();
+            $data['vendor_id'] = auth()->id();
+
             $product = ProductService::createOrUpdateProduct($data, $product);
 
             if ($product) {
@@ -49,7 +51,7 @@ class ProductController extends Controller
     public function deleteProduct($id)
     {
         try {
-            $product = ProductService::getAllProducts($id);
+            $product = ProductService::getVendorProducts(auth()->id(), $id);
 
             if (!$product) {
                 return $this->responseJSON(null, "Product not found.", 404);
