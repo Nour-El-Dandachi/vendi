@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Product;
+use App\Models\Notification;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -11,6 +12,8 @@ class ProductService
 {
     static function getCustomerProducts($id = null)
     {
+        self::deleteExpiredProducts();
+
         if (!$id) {
             return Product::with(['vendor', 'store'])
                 ->where('moderation_status', 'approved')
@@ -24,6 +27,8 @@ class ProductService
 
     static function getVendorProducts($vendor_id, $id = null)
     {
+        self::deleteExpiredProducts();
+
         if (!$id) {
             return Product::with(['vendor', 'store'])
                 ->where('vendor_id', $vendor_id)
@@ -37,6 +42,8 @@ class ProductService
 
     static function getAdminProducts($id = null)
     {
+        self::deleteExpiredProducts();
+
         if (!$id) {
             return Product::with(['vendor', 'store'])->get();
         }
@@ -91,12 +98,37 @@ class ProductService
             $product->moderation_reason = 'Moderation service unavailable';
         }
 
+        if (in_array($product->moderation_status, ['flagged', 'rejected'])) {
+            $product->expires_at = now()->addHour();
+        } else {
+            $product->expires_at = null;
+        }
+
         $product->save();
+
+        if (in_array($product->moderation_status, ['flagged', 'rejected'])) {
+            Notification::create([
+                'user_id' => $product->vendor_id,
+                'title' => 'Product Moderation Alert',
+                'message' => 'Your product "' . $product->name . '" was marked as ' . $product->moderation_status . '. It will be deleted after 1 hour if not corrected.',
+                'type' => 'system',
+                'is_read' => false,
+            ]);
+        }
+
         return $product;
     }
 
     static function deleteProduct($product)
     {
         return $product->delete();
+    }
+
+    static function deleteExpiredProducts()
+    {
+        Product::whereIn('moderation_status', ['flagged', 'rejected'])
+            ->whereNotNull('expires_at')
+            ->where('expires_at', '<=', now())
+            ->delete();
     }
 }

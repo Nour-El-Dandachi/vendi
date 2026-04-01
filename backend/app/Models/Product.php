@@ -21,6 +21,11 @@ class Product extends Model
     'status',
     'moderation_status',
     'moderation_reason',
+    'expires_at'
+];
+
+protected $casts = [
+    'expires_at' => 'datetime',
 ];
 
     public function vendor(): BelongsTo

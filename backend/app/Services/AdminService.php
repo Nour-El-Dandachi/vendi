@@ -67,6 +67,7 @@ class AdminService
             'total_stores' => Store::count(),
             'total_products' => Product::count(),
             'total_orders' => Order::count(),
+            
         ];
     }
 }

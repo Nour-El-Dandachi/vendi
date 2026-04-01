@@ -20,6 +20,7 @@ return new class extends Migration
             $table->enum('role', ['customer', 'vendor', 'admin'])->default('customer');
             $table->enum('status', ['active', 'suspended'])->default('active');
             $table->timestamps();
+            
         });
     }
 
