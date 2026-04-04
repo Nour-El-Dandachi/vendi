@@ -18,6 +18,7 @@ use App\Http\Controllers\Vendor\ProductController as VendorProductController;
 use App\Http\Controllers\Vendor\OrderController as VendorOrderController;
 use App\Http\Controllers\Vendor\StoreController;
 use App\Http\Controllers\Vendor\NotificationController as VendorNotificationController;
+use App\Http\Controllers\Vendor\DashboardController as VendorDashboardController;
 
 // Admin
 use App\Http\Controllers\Admin\UserController;
@@ -96,6 +97,8 @@ Route::group(["prefix" => "v0.1"], function () {
             Route::post('/add_update_notification/{id?}', [VendorNotificationController::class, "addOrUpdateNotification"]);
             Route::post('/mark_notification_as_read/{id}', [VendorNotificationController::class, "markAsRead"]);
             Route::delete('/delete_notification/{id}', [VendorNotificationController::class, "deleteNotification"]);
+
+            Route::get('/dashboard', [VendorDashboardController::class, "getDashboardStats"]);
         });
 
         // Admin

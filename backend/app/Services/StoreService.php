@@ -41,7 +41,7 @@ class StoreService
         $store->name = $data['name'] ?? $store->name;
         $store->description = $data['description'] ?? $store->description;
         $store->phone = $data['phone'] ?? $store->phone;
-        $store->rating = $data['rating'] ?? $store->rating;
+        $store->rating = $data['rating'] ?? $store->rating ?? 0;
         $store->status = $data['status'] ?? $store->status;
 
         $store->save();

@@ -60,7 +60,7 @@ class OrderService
         $order->address_id = $data['address_id'];
         $order->order_number = 'ORD-' . time();
         $order->total_amount = $data['total_amount'];
-        $order->payment_method = $data['payment_method'];
+        $order->payment_method = $data['payment_method'] ?? 'cash';
         $order->payment_status = $data['payment_status'] ?? 'pending';
         $order->order_status = $data['order_status'] ?? 'pending';
 
