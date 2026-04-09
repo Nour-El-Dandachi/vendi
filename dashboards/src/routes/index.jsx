@@ -7,6 +7,7 @@ import LoginPage from "../pages/auth/LoginPage";
 import OverviewPage from "../pages/dashboard/OverviewPage";
 import OrdersPage from "../pages/dashboard/OrdersPage";
 import InventoryPage from "../pages/dashboard/InventoryPage";
+import AddProductPage from "../pages/dashboard/AddProductPage";
 
 const router = createBrowserRouter([
   {
@@ -49,6 +50,14 @@ const router = createBrowserRouter([
         path: "/dashboard/inventory",
         element: <InventoryPage />,
       },
+      {
+        path: "/dashboard/inventory/add",
+        element: <AddProductPage />,
+        },
+        {
+        path: "/dashboard/inventory/edit/:id",
+        element: <AddProductPage />,
+        },
     ],
   },
 ]);
