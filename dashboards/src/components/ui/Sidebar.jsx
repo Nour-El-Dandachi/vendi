@@ -1,6 +1,6 @@
 import React from "react";
 
-const NAV_ITEMS = [
+const VENDOR_NAV_ITEMS = [
   {
     key: "overview",
     label: "Overview",
@@ -40,16 +40,64 @@ const NAV_ITEMS = [
   },
 ];
 
-export default function Sidebar({ activeKey = "overview", onNavigate, onLogout }) {
+const ADMIN_NAV_ITEMS = [
+  {
+    key: "admin_users",
+    label: "Users",
+    path: "/dashboard/admin/users",
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+        <circle cx="6" cy="6" r="2.5" stroke="currentColor" strokeWidth="1.5" />
+        <circle cx="12.5" cy="7" r="2" stroke="currentColor" strokeWidth="1.5" />
+        <path d="M2.5 14c.6-2 2.2-3 3.5-3s2.9 1 3.5 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        <path d="M10 14c.35-1.35 1.4-2.1 2.5-2.1 1.1 0 2.15.75 2.5 2.1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      </svg>
+    ),
+  },
+  {
+    key: "admin_stores",
+    label: "Stores",
+    path: "/dashboard/admin/stores",
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+        <path d="M3 6.5h12V15H3V6.5Z" stroke="currentColor" strokeWidth="1.5" />
+        <path d="M2 6.5 3.5 3h11L16 6.5" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+        <path d="M7 15v-4h4v4" stroke="currentColor" strokeWidth="1.5" />
+      </svg>
+    ),
+  },
+  {
+    key: "admin_products",
+    label: "Products",
+    path: "/dashboard/admin/products",
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+        <path d="M3 6.5 9 3l6 3.5v5L9 15l-6-3.5v-5Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+        <path d="M3 6.5 9 10m6-3.5L9 10m0 0v5" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+      </svg>
+    ),
+  },
+];
+
+export default function Sidebar({
+  activeKey,
+  onNavigate,
+  onLogout,
+  role = "vendor",
+}) {
+  const navItems = role === "admin" ? ADMIN_NAV_ITEMS : VENDOR_NAV_ITEMS;
+
   return (
     <aside style={styles.sidebar}>
       <div style={styles.brand}>
         <span style={styles.brandName}>Vendi Admin</span>
-        <span style={styles.brandRole}>BOUTIQUE CURATOR</span>
+        <span style={styles.brandRole}>
+          {role === "admin" ? "PLATFORM ADMIN" : "BOUTIQUE CURATOR"}
+        </span>
       </div>
 
       <nav style={styles.nav}>
-        {NAV_ITEMS.map((item) => {
+        {navItems.map((item) => {
           const active = item.key === activeKey;
 
           return (
@@ -64,7 +112,9 @@ export default function Sidebar({ activeKey = "overview", onNavigate, onLogout }
               <span style={{ ...styles.navIcon, color: active ? "#9B4D52" : "#b0a9a0" }}>
                 {item.icon}
               </span>
-              <span style={{ color: active ? "#3a2a2a" : "#7a6f68" }}>{item.label}</span>
+              <span style={{ color: active ? "#3a2a2a" : "#7a6f68" }}>
+                {item.label}
+              </span>
             </button>
           );
         })}

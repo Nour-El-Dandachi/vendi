@@ -20,16 +20,19 @@ export default function LoginPage() {
     try {
       const user = await login(email, password);
 
-if (user.role === "vendor") {
-  navigate("/dashboard/overview", { replace: true });
-} else {
-  navigate("/dashboard/overview", { replace: true });
-}
+      if (user.role === "vendor") {
+        navigate("/dashboard/overview", { replace: true });
+      } else if (user.role === "admin") {
+        navigate("/dashboard/admin/users", { replace: true });
+      } else {
+        navigate("/", { replace: true });
+      }
+
     } catch (err) {
       setError(
         err?.response?.data?.message ||
-          err?.message ||
-          "Login failed. Please try again."
+        err?.message ||
+        "Login failed. Please try again."
       );
     } finally {
       setLoading(false);

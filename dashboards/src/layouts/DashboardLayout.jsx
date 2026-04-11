@@ -10,6 +10,9 @@ function DashboardLayout() {
   const location = useLocation();
 
   function getActiveKey(pathname) {
+    if (pathname.includes("/dashboard/admin/users")) return "admin_users";
+    if (pathname.includes("/dashboard/admin/stores")) return "admin_stores";
+    if (pathname.includes("/dashboard/admin/products")) return "admin_products";
     if (pathname.includes("/dashboard/orders")) return "orders";
     if (pathname.includes("/dashboard/inventory")) return "inventory";
     return "overview";
@@ -24,6 +27,7 @@ function DashboardLayout() {
     <div style={styles.app}>
       <div style={styles.sidebarWrap}>
         <Sidebar
+          role={user?.role}
           activeKey={getActiveKey(location.pathname)}
           onNavigate={navigate}
           onLogout={handleLogout}
