@@ -4,6 +4,7 @@ import '../../providers/auth_provider.dart';
 import '../home/home_screen.dart';
 import '../store/store_setup_screen.dart';
 import 'login_screen.dart';
+import '../address/address_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -78,7 +79,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
     } else {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
+        MaterialPageRoute(builder: (_) => const AddressScreen()),
       );
     }
   }

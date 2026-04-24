@@ -33,6 +33,7 @@ Route::group(["prefix" => "v0.1"], function () {
     Route::group(["prefix" => "guest"], function () {
         Route::post("/login", [AuthController::class, "login"]);
         Route::post("/register", [AuthController::class, "register"]);
+        Route::post('/reset_password', [AuthController::class, 'resetPassword']);
     });
 
     Route::group(["middleware" => "auth:sanctum"], function () {
@@ -73,6 +74,8 @@ Route::group(["prefix" => "v0.1"], function () {
             Route::post('/add_update_notification/{id?}', [NotificationController::class, "addOrUpdateNotification"]);
             Route::post('/mark_notification_as_read/{id}', [NotificationController::class, "markAsRead"]);
             Route::delete('/delete_notification/{id}', [NotificationController::class, "deleteNotification"]);
+
+            Route::get('/best_seller_products', [OrderItemController::class, 'getBestSellerProducts']);
         });
 
         // Vendor
@@ -99,6 +102,7 @@ Route::group(["prefix" => "v0.1"], function () {
             Route::delete('/delete_notification/{id}', [VendorNotificationController::class, "deleteNotification"]);
 
             Route::get('/dashboard', [VendorDashboardController::class, "getDashboardStats"]);
+
         });
 
         // Admin
@@ -122,5 +126,7 @@ Route::group(["prefix" => "v0.1"], function () {
             // Orders
             Route::get('/orders/{id?}', [AdminOrderController::class, "getAllOrders"]);
         });
+
+        
     });
 });

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../../services/cart_service.dart';
 import '../home/home_screen.dart';
 import '../profile/profile_screen.dart';
+import '../checkout/checkout_screen.dart';
+import '../search/search_screen.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
@@ -144,6 +146,14 @@ class _CartScreenState extends State<CartScreen> {
     return 0.0;
   }
 
+  int getItemStock(Map<String, dynamic> item) {
+    final product = item['product'];
+    if (product is Map<String, dynamic>) {
+      return int.tryParse(product['stock_quantity']?.toString() ?? '0') ?? 0;
+    }
+    return 0;
+  }
+
   String getItemName(Map<String, dynamic> item) {
     final product = item['product'];
     if (product is Map<String, dynamic>) {
@@ -201,10 +211,17 @@ class _CartScreenState extends State<CartScreen> {
                 selected: false,
               ),
             ),
-            const _NavItem(
-              icon: Icons.search,
-              label: 'SEARCH',
-              selected: false,
+            GestureDetector(
+              onTap: () {
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (_) => const SearchScreen()),
+                );
+              },
+              child: const _NavItem(
+                icon: Icons.search,
+                label: 'SEARCH',
+                selected: false,
+              ),
             ),
             const _NavItem(
               icon: Icons.shopping_cart_outlined,
@@ -237,15 +254,9 @@ class _CartScreenState extends State<CartScreen> {
                     padding: const EdgeInsets.fromLTRB(20, 14, 20, 10),
                     child: Row(
                       children: [
-                        IconButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          icon: const Icon(Icons.arrow_back, color: primary),
-                        ),
                         const Expanded(
                           child: Text(
-                            'My Cart',
+                            '',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontSize: 28,
@@ -288,12 +299,14 @@ class _CartScreenState extends State<CartScreen> {
                               itemBuilder: (context, index) {
                                 final item =
                                     Map<String, dynamic>.from(cartItems[index]);
+
                                 final image = getItemImage(item);
                                 final name = getItemName(item);
                                 final description = getItemDescription(item);
                                 final price = getItemPrice(item);
                                 final quantity = item['quantity'] ?? 1;
                                 final cartItemId = item['id'];
+                                final stock = getItemStock(item);
 
                                 return Container(
                                   margin: const EdgeInsets.only(bottom: 18),
@@ -303,7 +316,8 @@ class _CartScreenState extends State<CartScreen> {
                                   ),
                                   padding: const EdgeInsets.all(14),
                                   child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       ClipRRect(
                                         borderRadius: BorderRadius.circular(16),
@@ -353,6 +367,14 @@ class _CartScreenState extends State<CartScreen> {
                                                 color: textMuted,
                                               ),
                                             ),
+                                            const SizedBox(height: 6),
+                                            Text(
+                                              'Stock: $stock',
+                                              style: const TextStyle(
+                                                fontSize: 12,
+                                                color: Color(0xFF9A8C8C),
+                                              ),
+                                            ),
                                             const SizedBox(height: 10),
                                             Text(
                                               '\$${price.toStringAsFixed(2)}',
@@ -367,20 +389,24 @@ class _CartScreenState extends State<CartScreen> {
                                               children: [
                                                 Container(
                                                   decoration: BoxDecoration(
-                                                    color: const Color(0xFFF5F0F0),
+                                                    color:
+                                                        const Color(0xFFF5F0F0),
                                                     borderRadius:
-                                                        BorderRadius.circular(14),
+                                                        BorderRadius.circular(
+                                                            14),
                                                   ),
                                                   child: Row(
                                                     children: [
                                                       IconButton(
                                                         onPressed: isProcessing
                                                             ? null
-                                                            : () => updateQuantity(
+                                                            : () =>
+                                                                updateQuantity(
                                                                   cartItemId:
                                                                       cartItemId,
                                                                   quantity:
-                                                                      quantity - 1,
+                                                                      quantity -
+                                                                          1,
                                                                 ),
                                                         icon: const Icon(
                                                           Icons.remove,
@@ -398,12 +424,41 @@ class _CartScreenState extends State<CartScreen> {
                                                       IconButton(
                                                         onPressed: isProcessing
                                                             ? null
-                                                            : () => updateQuantity(
+                                                            : () {
+                                                                if (stock <=
+                                                                    0) {
+                                                                  ScaffoldMessenger.of(
+                                                                          context)
+                                                                      .showSnackBar(
+                                                                    const SnackBar(
+                                                                      content: Text(
+                                                                          'This item is out of stock'),
+                                                                    ),
+                                                                  );
+                                                                  return;
+                                                                }
+
+                                                                if (quantity >=
+                                                                    stock) {
+                                                                  ScaffoldMessenger.of(
+                                                                          context)
+                                                                      .showSnackBar(
+                                                                    const SnackBar(
+                                                                      content: Text(
+                                                                          'You cannot add more than the available stock'),
+                                                                    ),
+                                                                  );
+                                                                  return;
+                                                                }
+
+                                                                updateQuantity(
                                                                   cartItemId:
                                                                       cartItemId,
                                                                   quantity:
-                                                                      quantity + 1,
-                                                                ),
+                                                                      quantity +
+                                                                          1,
+                                                                );
+                                                              },
                                                         icon: const Icon(
                                                           Icons.add,
                                                           size: 18,
@@ -470,7 +525,16 @@ class _CartScreenState extends State<CartScreen> {
                           width: double.infinity,
                           height: 56,
                           child: ElevatedButton(
-                            onPressed: cartItems.isEmpty ? null : () {},
+                            onPressed: cartItems.isEmpty
+                                ? null
+                                : () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (_) =>
+                                            const CheckoutScreen(),
+                                      ),
+                                    );
+                                  },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: primary,
                               shape: RoundedRectangleBorder(
